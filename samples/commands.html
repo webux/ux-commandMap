@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta event="description" content=""/>
+    <meta event="keywords" content=""/>
+    <meta event="author" content=""/>
+    <meta charset="UTF-8"/>
+    <style type="text/css">
+        body {
+            padding: 15px;
+        }
+    </style>
+</head>
+<body ng-controller="MainCtrl">
+<div>{{message}}</div>
+
+<script src="../lib/angular.min.js"></script>
+<script src="../build/ux-commandMap.js"></script>
+<script>
+    (function () {
+        'use strict';
+
+        function Example() {
+            this.name = 'Example class';
+        }
+
+        function TestACommand() {
+
+            this.construct = function (obj, num, example) {
+                console.log('TestACommand.construct()', obj, num, example);
+            }
+
+            this.execute = function (obj, num, example) {
+                console.log('TestACommand.execute()', obj, num, example);
+            }
+
+            this.destruct = function () {
+                console.log('TestACommand.destruct()');
+            }
+        }
+
+        function TestBCommand() {
+
+            this.construct = function (obj, num, example) {
+                console.log('TestBCommand.construct()', obj, num, example);
+            }
+
+            this.execute = function (obj, num, example) {
+                console.log('TestBCommand.execute()', obj, num, example);
+            }
+
+            this.destruct = function () {
+                console.log('TestBCommand.destruct()');
+            }
+        }
+
+        function TestAsyncCommand($filter, name) {
+
+            this.construct = function (obj, num, example) {
+                console.log('TestAsyncCommand.construct()', obj, num, example);
+            }
+
+            this.execute = function (obj, num, example) {
+                console.log('TestAsyncCommand.execute()', obj, num, example);
+                var scope = this;
+                setTimeout(function () {
+                    scope.complete();
+                }, 3000);
+            }
+
+            this.destruct = function () {
+                console.log('TestAsyncCommand.destruct()');
+            }
+
+            this.complete = function () {
+                console.log('TestAsyncCommand.complete()');
+            }
+        }
+
+        TestAsyncCommand.$inject = ['$filter', 'name'];
+
+        var module = angular.module('app', ['ux']);
+        module.controller('MainCtrl', function ($scope, commandMap) {
+            console.log('MainCtrl init');
+            $scope.message = "Hello, world!";
+
+            commandMap.map('events.test').toCommand(TestACommand);
+            commandMap.map('events.test').toCommand(TestAsyncCommand);
+            commandMap.map('events.test').toCommand(TestBCommand);
+            commandMap.map('events.test').toCommand(TestACommand); // already mapped
+
+            // invoke event and pass in params that can be consumed by commands
+            $scope.$emit('events.test', { message: 'Hello, world!'}, 123, new Example());
+        });
+
+        angular.element(document).ready(function () {
+            angular.bootstrap(document, ['app']);
+        });
+    }());
+</script>
+</body>
+</html>
