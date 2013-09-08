@@ -1,5 +1,5 @@
-Angular uxCommandMap
+Angular Command Map
 =========
 
-Angular command map for encapsulating functionality
+Angular command map for encapsulating functionality.
 
